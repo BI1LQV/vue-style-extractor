@@ -1,7 +1,7 @@
 import * as vscode from "vscode"
 export async function getTabSize(): Promise<number> {
   let allSettings = await vscode.workspace.getConfiguration()
-  return allSettings?.editor?.tabSize
+  return allSettings?.editor?.tabSize ?? 4
 }
 export function appendStyle(
   editBuilder: vscode.TextEditorEdit,
