@@ -26,7 +26,10 @@ export async function activate(context: vscode.ExtensionContext) {
         placeHolder: "#id or .className or some more complex ones",
         prompt: "Input the target CSS query",
         value: "",
-      }) ?? ""
+      })
+      if (!searchQuery) {
+        return
+      }
 
       let target = parseQuery(searchQuery)
       let selectionReplacement = new MagicString(selectedText)
