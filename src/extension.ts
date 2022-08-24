@@ -1,6 +1,6 @@
 import MagicString from "magic-string"
 import * as vscode from "vscode"
-import { getTabSize } from "./utils"
+import { appendStyle, getTabSize, parseQuery } from "./utils"
 export async function activate(context: vscode.ExtensionContext) {
   let disposable = vscode.commands.registerCommand("vue-style-extractor.extractStyle", async () => {
     const { activeTextEditor: editor, showWarningMessage: warn } = vscode.window
@@ -27,46 +27,22 @@ export async function activate(context: vscode.ExtensionContext) {
       prompt: "Input the target CSS query",
       value: "",
     }) ?? ""
-    let target: { type: "id" | "class"; value: string }
-    let className = searchQuery.match(/\.(?<name>[a-zA-Z-_]+)$/)?.groups?.name
-    let idName = searchQuery.match(/#(?<name>[a-zA-Z-_]+)$/)?.groups?.name
 
-    if (className) {
-      target = {
-        type: "class",
-        value: className,
-      }
-    }
-    if (idName) {
-      target = {
-        type: "id",
-        value: idName,
-      }
-    }
-    // replace the style attribute
-    await edit((editBuilder) => {
+    let target = parseQuery(searchQuery)
+    const tabSize = await getTabSize()
+    await edit(async (editBuilder) => {
+      // replace the style attribute
       editBuilder.replace(
         selection,
         new MagicString(selectedText)
           .overwrite(maybeMatches.index!,
             maybeMatches.index! + maybeMatches[0].length,
-            `${target.type}=\"${target.value}\"`// TODO: auto merge className
+            target ? `${target.type}=\"${target.value}\"` : ""
+            // TODO: auto merge className
           ).toString()
       )
-    })
-    const tabSize = await getTabSize()
-    // insert new class into <style>
-    let newStyleString = styles.split(";")
-      .map(s => " ".repeat(tabSize) + s.trim()).join(";\n")
-    const maybeAppendPos = document.getText().match(/<style.*>[\w\W]*<\/style>/)
-    if (!maybeAppendPos) {
-      return
-    }
-    await edit((editBuilder) => {
-      editBuilder.insert(
-        document.positionAt(maybeAppendPos.index! + maybeAppendPos[0].length - 8),
-        `\n${searchQuery}{\n${newStyleString}\n}\n`
-      )
+
+      appendStyle(editBuilder, document, styles, searchQuery, tabSize)
     })
   })
 
@@ -74,3 +50,4 @@ export async function activate(context: vscode.ExtensionContext) {
 }
 
 export function deactivate() { }
+
