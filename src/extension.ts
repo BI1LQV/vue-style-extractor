@@ -21,6 +21,28 @@ export async function activate(context: vscode.ExtensionContext) {
       return
     }
     const { groups: { styles } } = maybeMatches
+
+    const searchQuery = await vscode.window.showInputBox({
+      placeHolder: "#id or .className or some more complex ones",
+      prompt: "Input the target CSS query",
+      value: "",
+    }) ?? ""
+    let target: { type: "id" | "class"; value: string }
+    let className = searchQuery.match(/\.(?<name>[a-zA-Z-_]+)$/)?.groups?.name
+    let idName = searchQuery.match(/#(?<name>[a-zA-Z-_]+)$/)?.groups?.name
+
+    if (className) {
+      target = {
+        type: "class",
+        value: className,
+      }
+    }
+    if (idName) {
+      target = {
+        type: "id",
+        value: idName,
+      }
+    }
     // replace the style attribute
     await edit((editBuilder) => {
       editBuilder.replace(
@@ -28,7 +50,7 @@ export async function activate(context: vscode.ExtensionContext) {
         new MagicString(selectedText)
           .overwrite(maybeMatches.index!,
             maybeMatches.index! + maybeMatches[0].length,
-            "class=\"abc\""
+            `${target.type}=\"${target.value}\"`// TODO: auto merge className
           ).toString()
       )
     })
@@ -43,7 +65,7 @@ export async function activate(context: vscode.ExtensionContext) {
     await edit((editBuilder) => {
       editBuilder.insert(
         document.positionAt(maybeAppendPos.index! + maybeAppendPos[0].length - 8),
-        `\n.abc{\n${newStyleString}\n}\n`
+        `\n${searchQuery}{\n${newStyleString}\n}\n`
       )
     })
   })
