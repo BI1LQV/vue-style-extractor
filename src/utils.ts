@@ -17,12 +17,12 @@ export function appendStyle(
   if (!maybeAppendPos) {
     editBuilder.insert(
       document.lineAt(document.lineCount - 1).range.end,
-      `\n<style>\n${searchQuery}{\n${newStyleString}\n}\n</style>\n`
+      `\n<style>\n${searchQuery}{\n${newStyleString}}\n</style>\n`
     )
   } else {
     editBuilder.insert(
       document.positionAt(maybeAppendPos.index! + maybeAppendPos[0].length - 8),
-    `\n${searchQuery}{\n${newStyleString}\n}\n`
+    `\n${searchQuery}{\n${newStyleString}}\n`
     )
   }
 }
