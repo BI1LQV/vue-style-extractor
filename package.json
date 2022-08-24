@@ -29,7 +29,7 @@
     "watch": "tsc -watch -p ./",
     "pretest": "npm run compile && npm run lint",
     "lint": "eslint src --ext ts",
-    "package": "npm vsce package"
+    "package": "vsce package"
   },
   "devDependencies": {
     "@bi1lqv/eslint-config": "^0.26.11",
