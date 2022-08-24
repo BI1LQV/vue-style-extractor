@@ -14,13 +14,9 @@ export async function activate(context: vscode.ExtensionContext) {
       }
       const { document, selection, edit } = editor
       const selectedText = document.getText(selection)
-      const maybeMatches = /style="(?<styles>([\w\W]+?))"/[Symbol.match](selectedText)!
+      const maybeMatches = selectedText.match(/style="(?<styles>([\w\W]+?))"/)!
 
-      if (!(
-        maybeMatches
-      && maybeMatches.groups
-      && maybeMatches.groups.styles
-      )) {
+      if (!maybeMatches?.groups?.styles) {
         warn("style attribute not detected or no style to extract")
         return
       }
@@ -32,20 +28,30 @@ export async function activate(context: vscode.ExtensionContext) {
         value: "",
       }) ?? ""
 
-      const target = parseQuery(searchQuery)
-
+      let target = parseQuery(searchQuery)
       let selectionReplacement = new MagicString(selectedText)
-        .overwrite(maybeMatches.index!,
-          maybeMatches.index! + maybeMatches[0].length,
-          target ? `${target.type}=\"${target.value}\"` : ""
-        ).toString()
+      const maybeClasses = selectedText.match(/class="(?<classes>([\w\W]+?))"/)
+
+      if (target?.type === "class" && maybeClasses?.groups?.classes) {
+        const classes = maybeClasses.groups.classes
+        selectionReplacement.overwrite(maybeClasses.index!,
+          maybeClasses.index! + maybeClasses[0].length,
+          `class="${classes} ${target.value}"`
+        )
+        target = null
+      }
+
+      selectionReplacement.overwrite(maybeMatches.index!,
+        maybeMatches.index! + maybeMatches[0].length,
+        target ? `${target.type}=\"${target.value}\"` : ""
+      )
 
       const tabSize = await getTabSize()
       await edit(async (editBuilder) => {
         // replace the style attribute
         editBuilder.replace(
           selection,
-          selectionReplacement
+          selectionReplacement.toString()
         )
 
         appendStyle(
