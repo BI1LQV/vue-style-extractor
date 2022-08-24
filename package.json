@@ -6,6 +6,7 @@
   "engines": {
     "vscode": "^1.70.0"
   },
+  "repository":"https://github.com/BI1LQV/vue-style-extractor",
   "categories": [
     "Other"
   ],
@@ -21,12 +22,15 @@
       }
     ]
   },
+  "publisher":"BI1LQV",
   "scripts": {
     "vscode:prepublish": "pnpm run compile",
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
     "pretest": "pnpm run compile && pnpm run lint",
-    "lint": "eslint src --ext ts"
+    "lint": "eslint src --ext ts",
+    "package": "pnpm vsce package --no-dependencies",
+    "publish": "pnpm vsce publish --no-dependencies"
   },
   "devDependencies": {
     "@bi1lqv/eslint-config": "^0.26.11",
