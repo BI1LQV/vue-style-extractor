@@ -1,18 +1,17 @@
 import * as vscode from "vscode"
-export async function getTabSize(): Promise<number> {
-  let allSettings = await vscode.workspace.getConfiguration()
+function getTabSize(): number {
+  let allSettings = vscode.workspace.getConfiguration()
   return allSettings?.editor?.tabSize ?? 4
 }
 export function appendStyle(
   editBuilder: vscode.TextEditorEdit,
   document: vscode.TextDocument,
   styles: string,
-  searchQuery: string,
-  tabSize: number
+  searchQuery: string
 ) {
   // insert new class into <style>
   let newStyleString = styles.split(";")
-    .map(s => " ".repeat(tabSize) + s.trim()).join(";\n")
+    .map(s => " ".repeat(getTabSize()) + s.trim()).join(";\n")
   if (!newStyleString.endsWith("\n")) {
     newStyleString = `${newStyleString}\n`
   }

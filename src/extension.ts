@@ -1,6 +1,6 @@
 import MagicString from "magic-string"
 import * as vscode from "vscode"
-import { appendStyle, getTabSize, parseQuery } from "./utils"
+import { appendStyle, parseQuery } from "./utils"
 export async function activate(context: vscode.ExtensionContext) {
   let disposable = vscode.commands.registerCommand(
     "vue-style-extractor.extractStyle",
@@ -49,7 +49,6 @@ export async function activate(context: vscode.ExtensionContext) {
         target ? `${target.type}=\"${target.value}\"` : ""
       )
 
-      const tabSize = await getTabSize()
       await edit(async (editBuilder) => {
         // replace the style attribute
         editBuilder.replace(
@@ -59,7 +58,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
         appendStyle(
           editBuilder, document,
-          styles, searchQuery, tabSize
+          styles, searchQuery
         )
       })
     })
