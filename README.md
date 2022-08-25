@@ -18,4 +18,4 @@ After installing this extension, you just select the whole div tag and press `F1
 ![Preview](https://user-images.githubusercontent.com/6017664/186410910-b90257bd-bbbd-4bc1-877e-db67826cf55f.gif)
 ### todo-lists:
 - [ ] support UnoCSS attributed class
-- [ ] i18n
+- [x] i18n

@@ -1,6 +1,8 @@
 import MagicString from "magic-string"
 import * as vscode from "vscode"
-import { appendStyle, parseQuery } from "./utils"
+import Tokens from "./i18n/token"
+import { appendStyle, i18n, parseQuery } from "./utils"
+const localizer = i18n(vscode.env.language)
 export async function activate(context: vscode.ExtensionContext) {
   let disposable = vscode.commands.registerCommand(
     "vue-style-extractor.extractStyle",
@@ -9,7 +11,7 @@ export async function activate(context: vscode.ExtensionContext) {
         activeTextEditor: editor, showWarningMessage: warn,
       } = vscode.window
       if (!editor) {
-        warn("no editing code")
+        warn(localizer(Tokens.noEditingCode))
         return
       }
       const { document, selection, edit } = editor
@@ -17,14 +19,14 @@ export async function activate(context: vscode.ExtensionContext) {
       const maybeMatches = selectedText.match(/style="(?<styles>([\w\W]+?))"/)!
 
       if (!maybeMatches?.groups?.styles) {
-        warn("style attribute not detected or no style to extract")
+        warn(localizer(Tokens.noStyle))
         return
       }
       const { groups: { styles } } = maybeMatches
 
       const searchQuery = await vscode.window.showInputBox({
-        placeHolder: "#id or .className or some more complex ones",
-        prompt: "Input the target CSS query",
+        placeHolder: localizer(Tokens.querySample),
+        prompt: localizer(Tokens.requireQuery),
         value: "",
       })
       if (!searchQuery) {

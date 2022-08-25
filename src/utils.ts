@@ -1,4 +1,7 @@
 import * as vscode from "vscode"
+import cn from "./i18n/cn"
+import en from "./i18n/en"
+import type Tokens from "./i18n/token"
 function getTabSize(): number {
   let allSettings = vscode.workspace.getConfiguration()
   return allSettings?.editor?.tabSize ?? 4
@@ -47,4 +50,12 @@ export function parseQuery(searchQuery: string) {
     }
   }
   return target
+}
+
+export function i18n(language: string) {
+  if (language === "cn") {
+    return (key: Tokens) => cn[key]
+  } else {
+    return (key: Tokens) => en[key]
+  }
 }
