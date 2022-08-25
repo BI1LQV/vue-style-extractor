@@ -13,7 +13,7 @@ color:white;font-size:16px;"
 </div>
 ```
 
-After installing this extension, you just select the whole div tag and press `F1`, input `extract style`, and the style will be extracted into `<style>` tag.
+After installing this extension, you just select the whole div tag and press `F1`, input `extract style`, then input the new selector, like `.button-wrap > #btn1`, and the style will be extracted into `<style>` tag, the original element will get a property `id="btn1"`.
 
 ![Preview](https://user-images.githubusercontent.com/6017664/186410910-b90257bd-bbbd-4bc1-877e-db67826cf55f.gif)
 ### todo-lists:
