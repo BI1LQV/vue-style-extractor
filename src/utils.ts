@@ -13,6 +13,9 @@ export function appendStyle(
   // insert new class into <style>
   let newStyleString = styles.split(";")
     .map(s => " ".repeat(tabSize) + s.trim()).join(";\n")
+  if (!newStyleString.endsWith("\n")) {
+    newStyleString = `${newStyleString}\n`
+  }
   const maybeAppendPos = document.getText().match(/<style.*>[\w\W]*<\/style>/)
   if (!maybeAppendPos) {
     editBuilder.insert(
